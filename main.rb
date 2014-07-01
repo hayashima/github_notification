@@ -1,7 +1,48 @@
 require 'octokit'
+require 'open-uri'
 
+class Github
+  REPOS = 'hayashima/bondgate'
 
-client = Octokit::Client.new(:access_token => ENV['GITHUB_ACCESS_KEY'])
-client.pull_requests('hayashima/bondgate').each do |request|
-  p request.head.ref
+  def initialize
+    @client = Octokit::Client.new(:access_token => ENV['GITHUB_ACCESS_KEY'])
+    @request = @client.pull_requests(REPOS).select { |v| v.head.ref == ENV['BRANCH'] }.first
+  end
+
+  def notice(status)
+    exit unless @request
+    case status
+      when 'failed'
+        failed
+      when 'passed'
+        passed
+      else
+        raise 'status not found.'
+    end
+  end
+
+  private
+  def passed
+    message = '![](https://raw.githubusercontent.com/hayashima/github_notification/master/img/passed.png)'
+    @client.add_comment(REPOS, @request.number, message)
+  end
+
+  def failed
+    message = ''
+    begin
+      base_uri = "http://jenkins.bondgate.jp/job/#{ENV['JOB_NAME']}/#{ENV['BUILD_NUMBER']}/console"
+      result = open("#{base_uri}Text",
+           :http_basic_authentication=>['github', ENV['JENKINS_PASSWORD']])
+      result.read.match(/Failed examples:[\s\S]*/) do |md|
+        message = "![](https://raw.githubusercontent.com/hayashima/github_notification/master/img/failed.jpg)\n" +
+            md[0] + "\n\n#{base_uri}"
+      end
+    rescue OpenURI::HTTPError
+      # pass
+    end
+    @client.add_comment(REPOS, @request.number, message)
+  end
 end
+
+github = Github.new
+github.notice(ENV['STATUS'])
