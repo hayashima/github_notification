@@ -30,7 +30,7 @@ class Github
   def failed
     message = ''
     begin
-      base_uri = "http://jenkins.bondgate.jp/job/#{ENV['JOB_NAME']}/#{ENV['BUILD_NUMBER']}/console"
+      base_uri = "http://jenkins.bondgate.jp/job/#{ENV['PARENT_JOB_NAME']}/#{ENV['PARENT_BUILD_NUMBER']}/console"
       result = open("#{base_uri}Text",
            :http_basic_authentication=>['github', ENV['JENKINS_PASSWORD']])
       result.read.match(/Failed examples:[\s\S]*/) do |md|
