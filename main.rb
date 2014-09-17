@@ -27,6 +27,7 @@ class Github
   def passed
     message = '![](https://raw.githubusercontent.com/hayashima/github_notification/master/img/passed.png)'
     @client.add_comment(REPOS, @request.number, message)
+    @client.create_status(REPOS, @request.head.sha, 'success')
   end
 
   def failed
@@ -43,6 +44,7 @@ class Github
       # pass
     end
     @client.add_comment(REPOS, @request.number, message)
+    @client.create_status(REPOS, @request.head.sha, 'failure')
   end
 end
 
