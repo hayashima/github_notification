@@ -7,6 +7,7 @@ class Github
   REPOS = 'hayashima/bondgate'
 
   def initialize
+    Octokit.auto_paginate = true
     @client = Octokit::Client.new(:access_token => ENV['GITHUB_ACCESS_KEY'])
     @request = @client.pull_requests(REPOS).select { |v| v.head.ref == ENV['BRANCH'] }.first
   end
