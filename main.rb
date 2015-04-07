@@ -26,8 +26,7 @@ class Github
 
   private
   def passed
-    message = "![](https://raw.githubusercontent.com/hayashima/github_notification/master/img/passed.png)\n"
-    message += "Test Passed."
+    message = '![](https://raw.githubusercontent.com/hayashima/github_notification/master/img/passed.png)'
     @client.add_comment(REPOS, @request.number, message)
     @client.create_status(REPOS, @request.head.sha, 'success')
   end
