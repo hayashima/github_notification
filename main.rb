@@ -32,7 +32,7 @@ class Github
   end
 
   def failed
-    message = ''
+    message = 'Jenkins build failed.'
     begin
       base_uri = "http://jenkins.bondgate.jp/job/#{ENV['PARENT_JOB_NAME']}/#{ENV['PARENT_BUILD_NUMBER']}/console"
       result = open("#{base_uri}Text",
