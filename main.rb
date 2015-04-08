@@ -39,7 +39,7 @@ class Github
            :http_basic_authentication=>['github', ENV['JENKINS_PASSWORD']])
       result.read.match(/Failed examples:[\s\S]*/) do |md|
         message = "![](https://raw.githubusercontent.com/hayashima/github_notification/master/img/failed.jpg)\n" +
-            md[0].gsub(/#(\d+)/,'＃\1') + "\n\n#{base_uri}"
+            md[0].gsub(/#(\d+)/,':hash:\1') + "\n\n#{base_uri}"
       end
     rescue OpenURI::HTTPError
       # pass
